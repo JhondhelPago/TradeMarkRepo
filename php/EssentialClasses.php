@@ -5,6 +5,7 @@
 
 use function PHPSTORM_META\map;
 
+
 class SERVER {
     private $host = "localhost"; // 127.0.0.1
     private $username = "root";
@@ -214,6 +215,7 @@ class OfferPool{
     private $id = null;
     public $selectedpost_id = null;
     public $Email = null;
+    public $User_Id = null;
     public $ItemName = null;
     public $Category = null;
     public $item_Condition = null;
@@ -226,10 +228,11 @@ class OfferPool{
     public $Status = null;
 
 
-    public function __construct($id, $selectedpost_id, $Email, $ItemName, $Category, $item_Condition, $Method, $Price, $Description, $images, $Date, $Time, $Status)
+    public function __construct($id, $selectedpost_id, $User_Id, $Email, $ItemName, $Category, $item_Condition, $Method, $Price, $Description, $images, $Date, $Time, $Status)
     {
         $this->id = $id;
         $this->selectedpost_id = $selectedpost_id;
+        $this->User_Id = $User_Id;
         $this->Email = $Email;
         $this->ItemName = $ItemName;
         $this->Category = $Category;
@@ -517,7 +520,7 @@ class PostObjectTools{
         if($result->num_rows > 0){
             while($row = $result->fetch_assoc()){
 
-                $OfferPoolObjectArray[] = new OfferPool($row['id'], $row['selectedpost_id'], $row['Email'], $row['ItemName'], $row['Category'], $row['item_Condition'], $row['Method'], $row['Price'], $row['Description'], $row['images'], $row['Date'], $row['Time'], $row['status']);
+                $OfferPoolObjectArray[] = new OfferPool($row['id'], $row['selectedpost_id'], $row['User_Id'],  $row['Email'], $row['ItemName'], $row['Category'], $row['item_Condition'], $row['Method'], $row['Price'], $row['Description'], $row['images'], $row['Date'], $row['Time'], $row['status']);
                 
 
             }
@@ -976,22 +979,34 @@ class StatusOffer{
 
     public function initiatePostObject(){
 
-        $MyServer = new SERVER("projectdb", "post_img");
-        $MyServer->Server_Conn();
-        $sql = "SELECT * FROM " . $MyServer->get_table() . " WHERE `id` = " . $this->OfferObject->selectedpost_id;
+        try{
+            $MyServer = new SERVER("projectdb", "post_img");
+            $MyServer->Server_Conn();
+            $sql = "SELECT * FROM " . $MyServer->get_table() . " WHERE `id` = " . $this->OfferObject->selectedpost_id;
 
-        $result = $MyServer->get_ServerConnection()->query($sql);
+            $result = $MyServer->get_ServerConnection()->query($sql);
 
-        $this->PostObject = PostObjectTools::PostRows_to_PostObjectArray($result)[0];
+            $Local_variable_PostObject = PostObjectTools::PostRows_to_PostObjectArray($result)[0];
 
-        
-        $SecondServer = new SERVER("projectdb", "users_information");
-        $SecondServer->Server_Conn();
-        $second_sql = "SELECT * FROM " . $SecondServer->get_table() . " WHERE `Email` = " . StringManipulate::wrap_string_qoutation($this->PostObject->get_email());
+            if($Local_variable_PostObject != null){
+                $this->PostObject = $Local_variable_PostObject;
 
-        $second_result = $SecondServer->get_ServerConnection()->query($second_sql);
+                $SecondServer = new SERVER("projectdb", "users_information");
+                $SecondServer->Server_Conn();
+                $second_sql = "SELECT * FROM " . $SecondServer->get_table() . " WHERE `Email` = " . StringManipulate::wrap_string_qoutation($this->PostObject->get_email());
+    
+                $second_result = $SecondServer->get_ServerConnection()->query($second_sql);
+    
+                $this->UserInfoObject = PostObjectTools::UserInfoRows_to_UserInfoObjectArray($second_result)[0];
 
-        $this->UserInfoObject = PostObjectTools::UserInfoRows_to_UserInfoObjectArray($second_result)[0];
+            }
+
+            
+          
+        }catch(Exception $e){
+            //if there is no post it will raise a warning and error that im accessing array offet on valvue null;
+            $this->PostObject = null;
+        }
 
 
        
