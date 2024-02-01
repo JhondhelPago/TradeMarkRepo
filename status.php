@@ -343,7 +343,7 @@ if($ActivePost->userActivePostArray != null){
                 <!-- bg boxes -->
                 <div class="row position-fixed" style="z-index: -1;">
                     <div class="col w-100 h-100 position-fixed top-0 start-0">
-                        <div class="row h-100" style="">
+                        <div class="row h-100" >
                             <div class="h-100 w-100 top-0 translate-middle" style=" border-radius: 10px; background-color: #b9b1df; filter: blur(150px);"></div>
                             <div class="position-absolute w-75 h-100 bottom-0 end-0" style=" border-radius: 10px; background-color: #d3d7eb; filter: blur(100px);"></div>
                             <div class="h-25 w-50 position-absolute bottom-0 end-0 translate-middle-y" style=" border-radius: 10px; background-color: #b9b1df; filter: blur(150px);"></div>
@@ -379,7 +379,7 @@ if($ActivePost->userActivePostArray != null){
                                         <div class="row shadow justify-content-center align-items-center rounded bg-light">
                                             <!-- pic -->
                                             <div class="col-12 col-xl-5 justify-content-center align-items-center p-0 ms-3 ms-lg-1 m-3 d-inline-grid rounded" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
-                                                <img class="img-fluid rounded" src="<?php echo "image-files/" . $UserOffer->PostObject->Display_Item_Thumbnail(); ?>" alt="Product Image" >
+                                                <img class="img-fluid rounded" src="<?php echo "image-files/" . $UserOffer->PostObject->Display_Item_Thumbnail(); ?>" alt="Product Image" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;" >
                                             </div>
                                             <!-- details -->
                                             <div class="col col-sm-12 col-xl py-2 d-grid">
@@ -463,7 +463,7 @@ if($ActivePost->userActivePostArray != null){
                                                 <div class="row shadow justify-content-center align-items-center rounded bg-light">
                                                     <!-- pic -->
                                                     <div class="col-12 col-xl-5 justify-content-center align-items-center p-0 ms-3 ms-lg-1 m-3 d-inline-grid rounded" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
-                                                        <img class="img-fluid rounded" src="<?php echo "image-files/" . $UserOffer->PostObject->Display_Item_Thumbnail(); ?>" alt="Product Image" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
+                                                        <img class="img-fluid rounded" src="<?php echo "offer-images-files/" . $UserOffer->OfferObject->Display_Item_Thumbnail(); ?>" alt="Product Image" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
                         
                                                     </div>
 
@@ -471,7 +471,7 @@ if($ActivePost->userActivePostArray != null){
                                                     <!-- details -->
                                                     <div class="col col-sm-12 col-xl py-2 d-grid">
                                                         
-                                                        <h1 class="display-6 fw-semibold mb-3"><?php echo $UserOffer->PostObject->itemName; ?></h1>
+                                                        <h1 class="display-6 fw-semibold mb-3"><?php echo $UserOffer->OfferObject->ItemName; ?></h1>
                                                        
                                                         <div class="row justify-content-evenly align-items-center mb-2 m-0s">
                                                             <p class="col lead"><?php echo $UserOffer->PostObject->get_email(); ?></p>
@@ -479,7 +479,7 @@ if($ActivePost->userActivePostArray != null){
                                                         </div>
                                                         <div class="row justify-content-evenly align-items-center m-0s">
                                                             <p class="col lead"><?php echo $UserOffer->UserInfoObject->Address . " - " . $UserOffer->UserInfoObject->City; ?></p>
-                                                            <p class="col lead d-flex d-xxl-inline justify-content-end">Date of Proposal: <?php echo $UserOffer->OfferObject->Date; ?></p>
+                                                            <p class="col lead d-flex d-xxl-inline justify-content-end">Date of Proposal: <br> <?php echo $UserOffer->OfferObject->Date; ?></p>
                                                             <br>
                                                             <form class="col btn btn-outline-warning text-dark border border-dark rounded m-2" method="post" action="php/post_viewer_action.php">
                                                                 <input type="hidden" name="post_id" value="<?php echo $UserOffer->PostObject->get_post_id(); ?>">
@@ -489,7 +489,7 @@ if($ActivePost->userActivePostArray != null){
 
                                                              <form class="col btn btn-outline-warning text-dark border border-dark rounded m-2" method="post" action="php/plain_viewer_action.php" >
                                                                             <input type="hidden" name="offer_id" value="<?php echo $UserOffer->OfferObject->get_offer_id(); ?>">
-                                                                            <button class="col btn text-dark" type="submit" name="viewer">View Your Offer To this Post</button>
+                                                                            <button class="col btn text-dark" type="submit" name="viewer">View Your Offer</button>
                                                             </form>
                                                         </div>
                                                         <div class="row fs-light mb-2">
@@ -603,7 +603,7 @@ if($ActivePost->userActivePostArray != null){
                                 <div class="row shadow justify-content-center align-items-center rounded bg-light">
                                     <!-- pic -->
                                     <div class="col-12 col-xl-5 justify-content-center align-items-center p-0 ms-3 ms-lg-1 m-3 d-inline-grid rounded" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
-                                        <img class="img-fluid rounded" src="<?php echo "image-files/" . $UserOffer->PostObject->Display_Item_Thumbnail(); ?>" alt="Product Image" >
+                                        <img class="img-fluid rounded" src="<?php echo "image-files/" . $UserOffer->PostObject->Display_Item_Thumbnail(); ?>" alt="Product Image" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
                                         </div>
                                         <!-- details -->
                                         <div class="col col-sm-12 col-xl py-2 d-grid">
