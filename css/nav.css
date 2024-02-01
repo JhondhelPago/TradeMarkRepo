@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+:root {
+    --primary: rgba(61, 83, 201, 1);
+    --secondary: rgba(89, 61, 201, 1);
+    --highlight: rgba(255, 188, 60, 1);
+    --white: rgba(255, 255, 255, 1);
+    --black: rgba(0, 0, 0, 1);
+    --gray: rgba(239, 241, 244, 1);
+}
+* {
+    font-family: "Poppins", sans-serif;
+}
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #888; 
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+.header1{
+    color: transparent;
+    -webkit-text-stroke: 1px black;
+}
+.navbar-collapse{
+    background: transparent;
+}
+@media (max-width: 1199px){
+    .navbar-collapse{
+        background: rgba(0, 0, 0, 0.459);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(6.2px);
+        -webkit-backdrop-filter: blur(6.2px);
+        border-radius: 10px;;
+    }
+    .filterHeight{
+        max-height: 80vh;
+    }
+}
+/* @media (min-width: 1200px){
+} */
+.postListHeight{
+    max-height: 80vh;
+}
+.navHover{
+    transition: all 0.1s ease-in-out;
+}
+.navHover:hover{
+    padding: 0px 10px 0px 10px;
+    background: rgba(255, 193, 7, 0);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.1px);
+    -webkit-backdrop-filter: blur(6.1px);
+    border: 1px solid rgba(255, 193, 7, 1);
+    font-weight: 600;
+}
+.navActive{
+    color: white;
+    font-weight: 600;
+    cursor: default;
+}
+.profile-pic-btn:hover{
+    scale: 1.05;
+    background: rgba(255, 255, 255, 0.8);
+    transition: all 0.1s ease-in-out;
+}
+.scaleHover{
+    transition: scale 0.1s ease-in-out;
+}
+.scaleHover:hover{
+    scale: 1.05;
+}
+.borderHover{
+    transition: all 0.1s ease-in-out;
+}
+.borderHover:hover{
+    box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.3);
+    /* border: solid 1px var(--black); */
+    scale: 1.01;
+}

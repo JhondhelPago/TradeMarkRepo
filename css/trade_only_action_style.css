@@ -1,0 +1,36 @@
+.main_div_trade_only{
+    width: 100%;
+    height: 90vh;
+    border: solid black 2px;
+    display: flex;    
+}
+
+.item_images_display{
+    width: 30%;
+    border-right: solid black 1px;
+    
+}
+
+.information_and_form{
+    width: 70%;
+}
+
+.trader_post_details{
+    height: auto;
+    width: 800px;
+    background-color: white;
+    border-radius: 10px;
+    margin-top: 15px;
+    margin-left: 30px;
+    padding: 15px;
+    margin-bottom: 20px;
+
+}
+
+
+/* p tags*/
+#ITEMNAME{
+    font-size: larger;
+    font-weight: bolder;
+}
+
