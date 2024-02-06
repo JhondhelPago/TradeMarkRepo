@@ -5,6 +5,89 @@
 
 use function PHPSTORM_META\map;
 
+class DistanceDuration{
+
+    public static function  calculateDistanceDuration($OriginCity, $DistinationCity) {
+
+        $Distance_Duration = array();
+
+        $openRouteServiceApiKey = '5b3ce3597851110001cf62482d63e1d674184ffeaf70166c4c846223';
+
+        // Replace OPENCAGE_API_KEY with your OpenCage Geocoding API key
+        $openCageApiKey = '88accf2c52d04a86bfecfacfcac45fbe';
+        
+        // Replace originCity, originCountry, destinationCity, destinationCountry with your city and country names
+        $originCity = $OriginCity;
+        $originCountry = 'Philippines';
+        $destinationCity = $DistinationCity;
+        $destinationCountry = 'Philippines';
+        
+        // Function to get coordinates using OpenCage Geocoding API
+        function getCoordinates($city, $country, $apiKey) {
+            $cityCountry = urlencode($city . ', ' . $country);
+            $geocodingUrl = "https://api.opencagedata.com/geocode/v1/json?q=$cityCountry&key=$apiKey";
+            $response = file_get_contents($geocodingUrl);
+            $data = json_decode($response, true);
+            return [
+                'lat' => $data['results'][0]['geometry']['lat'],
+                'lng' => $data['results'][0]['geometry']['lng']
+            ];
+        }
+        
+        // Get coordinates for origin and destination
+        $originCoordinates = getCoordinates($originCity, $originCountry, $openCageApiKey);
+        $destinationCoordinates = getCoordinates($destinationCity, $destinationCountry, $openCageApiKey);
+        
+        // Build the OpenRouteService API request URL
+        $requestUrl = "https://api.openrouteservice.org/v2/directions/driving-car?api_key=$openRouteServiceApiKey&start=${originCoordinates['lng']},${originCoordinates['lat']}&end=${destinationCoordinates['lng']},${destinationCoordinates['lat']}";
+        
+        // Make the API request
+        $response = file_get_contents($requestUrl);
+        
+        // Decode the JSON response
+        $data = json_decode($response, true);
+        
+        // Check if the request was successful
+        if (isset($data['features'][0]['properties']['segments'][0]['distance'])) {
+            // Extract distance information
+            $distance = $data['features'][0]['properties']['segments'][0]['distance'];
+            $duration = $data['features'][0]['properties']['segments'][0]['duration'];
+        
+            // Output the distance
+            // echo "Distance: $distance meters\n";
+            // echo "Duration: $duration duration\n";
+
+            $duration_seconds = $duration;
+
+            // Calculate hours, minutes, and seconds
+            $hours = floor($duration_seconds / 3600);
+            $minutes = floor(($duration_seconds % 3600) / 60);
+            $seconds = $duration_seconds % 60;
+
+            // Format the result
+            $time_format = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+
+
+            $time_duration =  $time_format;
+
+
+            $Distance_Duration[] = $distance;
+            $Distance_Duration[] = $time_duration;
+
+
+            
+        } else {
+            // Handle API error
+            echo "Error: Unable to retrieve distance\n";
+        }
+
+
+        return $Distance_Duration;
+    
+    }
+
+}
+
 
 class SERVER {
     private $host = "localhost"; // 127.0.0.1
@@ -77,8 +160,11 @@ class Post{
     public $payment_method = null;   //create a function to handle the transaction method, this will trigger the logic flow of the Post
     public $price = null;
     public $proposals_ids_array = null;
+    public $exchange_method = null;
     public $date = null;
     public $time = null;
+    public $transaction_id;
+    public $tableOrientation = "post_img";
 
     // this variable holds the array of object in instance of the offer table in database
     
@@ -90,7 +176,7 @@ class Post{
 
     //constructor for class attributes
 
-    public function __construct($postID, $user_Id, $email, $itemName, $imageArray, $item_condition, $category, $description, $payment_method, $price, $proposals_ids_array, $date, $time)
+    public function __construct($postID, $user_Id, $email, $itemName, $imageArray, $item_condition, $category, $description, $payment_method, $price, $proposals_ids_array, $exchange_method, $date, $time, $transaction_id)
     {
         $this->post_ID = $postID;
         $this->User_Id = $user_Id;
@@ -103,8 +189,11 @@ class Post{
         $this->payment_method = $payment_method;
         $this->price = $price;
         $this->proposals_ids_array = $proposals_ids_array;
+        $this->exchange_method = $exchange_method;
         $this->date = $date;
         $this->time = $time;
+        $this->transaction_id = $transaction_id;
+        
 
 
         //this function process the imagaArray attribute for formatting the imagenames ready for displaying
@@ -210,6 +299,36 @@ class UserInformation {
 
 }
 
+class TransactionDetails{
+    public $id;
+    public $sender_id;
+    public $receiver_id;
+    public $transaction_mode;
+    public $date_of_shipment;
+    public $arrival_date;
+    public $shipping_time;
+    public $arrival_time;
+    public $status;
+    public $chat;
+
+    public function __construct($row)
+    {
+        $this->id = $row['id'];
+        $this->sender_id = $row['sender_id'];
+        $this->receiver_id = $row['receiver_id'];
+        $this->transaction_mode = $row['transaction_mode'];
+        $this->date_of_shipment = $row['date_of_shipment'];
+        $this->arrival_date = $row['arrival_date'];
+        $this->shipping_time = $row['shipping_time'];
+        $this->arrival_time = $row['arrival_time'];
+        $this->status = $row['status'];
+        $this->chat = $row['chat'];
+
+    }
+
+
+}
+
 
 class OfferPool{
     private $id = null;
@@ -226,6 +345,7 @@ class OfferPool{
     public $Date = null;
     public $Time = null;
     public $Status = null;
+    public $tableOrientation = "offer_pool";
 
 
     public function __construct($id, $selectedpost_id, $User_Id, $Email, $ItemName, $Category, $item_Condition, $Method, $Price, $Description, $images, $Date, $Time, $Status)
@@ -484,7 +604,7 @@ class PostObjectTools{
             while($row = $result->fetch_assoc()){
                 //turning the rows data into PostObjectArray that holds tha data from post_img table
 
-                $PostObjectArray[] = new Post($row['id'], $row['User_Id'], $row['Email'], $row['name'], $row['image'], $row['Item_Condition'], $row['category'], $row['description'], $row['payment_method'], $row['price'], $row['Proposals'], $row['Date'], $row['Time']);
+                $PostObjectArray[] = new Post($row['id'], $row['User_Id'], $row['Email'], $row['name'], $row['image'], $row['Item_Condition'], $row['category'], $row['description'], $row['payment_method'], $row['price'], $row['Proposals'], $row['exchange_method'], $row['Date'], $row['Time'], $row['transaction_id']);
             }
         
             return $PostObjectArray;
@@ -531,6 +651,22 @@ class PostObjectTools{
             return $OfferPoolObjectArray = null;
         }
 
+    }
+
+    public static function TransactionDetailsRows_to_TransactionDetailsObjectArray($result){
+        $TransactionDetailsArray = array();
+
+        if($result->num_rows > 0){
+            while($row = $result->fetch_assoc()){
+
+                $TransactionDetailsArray[] = new TransactionDetails($row);
+            }
+            
+            return $TransactionDetailsArray;
+
+        }else{
+            return $TransactionDetailsArray = null;
+        }
     }
 
     public static function AccountBalanceRows_to_AccountBalanceObjectArray($result){
@@ -1035,6 +1171,142 @@ class UserInfoRetriever{
 
     }
 }
+
+class CodeGenerator{
+    public static function  GenerateRandomCode($length = 6){
+    $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $randomString = '';
+
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, strlen($characters) - 1)];
+    }
+
+    return $randomString;
+    }
+}
+
+
+
+class TimeCalcu{
+    public static function Arrival_time($timenow, $time_duration){
+        $TimenowHour = explode(":", $timenow)[0];
+        $TimenowMinute = explode(":", $timenow)[1];
+
+        $TimenowFormatted = (float)$TimenowHour + ((float)$TimenowMinute / 60 );
+        
+        
+        $TimeDurationHour = explode(":", $time_duration)[0];
+        $TimeDurationMinute = explode(":", $time_duration)[1];
+
+        $TimeDurationFormatted = (float)$TimeDurationHour + ((float)$TimeDurationMinute / 60);
+
+        $Arrival_time = number_format($TimenowFormatted + $TimeDurationFormatted, 2) ;
+
+        
+
+        if($Arrival_time > 24){
+           $Arrival_time =  $Arrival_time - 24;
+
+           $Arrival_time_floor = floor($Arrival_time);
+
+
+           $Arrival_minute = $Arrival_time - $Arrival_time_floor;  
+
+            return $Arrival_time_floor . ":" . ((int)($Arrival_minute * 60));
+
+        }
+
+        // return $Arrival_time;
+
+        $Arrival_time_floor = floor($Arrival_time);
+        $Arrival_minute = $Arrival_time - $Arrival_time_floor;
+
+        return $Arrival_time_floor . ":" . ((int)($Arrival_minute * 60));
+        
+    }
+
+    public static function CalculateTimeDif($Current_time, $Arrival_Time){
+
+        // $Shipping_time_Hour = explode(":", $Shipping_Time)[0];
+        // $Shipping_time_Minute = explode(":", $Shipping_Time)[1];
+ 
+        // $Shipping_time_formmated = (int)$Shipping_time_Hour + ((int)$Shipping_time_Minute / 60);
+
+
+        $Current_time_Hour = explode(":", $Current_time)[0];
+        $Current_time_Minute = explode(":", $Current_time)[1];
+        
+        $Current_time_formatted = (int)$Current_time_Hour + ((int)$Current_time_Minute / 60);
+
+        $Arrival_Time_Hour = explode(":", $Arrival_Time)[0];
+        $Arrival_Time_Minute = explode(":", $Arrival_Time)[1];
+
+        $Arrival_time_formatted = (int)$Arrival_Time_Hour + ((int)$Arrival_Time_Minute / 60);
+
+
+        $Remaining_time = round(($Arrival_time_formatted - $Current_time_formatted) * 60);
+        
+        $Remaining_hours = $Remaining_time / 60;
+        
+        return $Remaining_hours;
+
+    }
+
+    public static function time_percentage($Shipment_Time , $Current_Time, $Arrival_Time){
+
+        $Current_time_success = TimeCalcu::CalculateTimeDif($Current_Time, $Arrival_Time);
+
+        $Duration_Time = TimeCalcu::CalculateTimeDif($Shipment_Time, $Arrival_Time);
+
+        $SuccessPercent = 1 - ($Current_time_success / $Duration_Time); 
+
+        return $SuccessPercent;
+
+    }
+
+    
+}
+
+class TransactionCheck{
+    public static function TransactionDetailsExist($sender_id, $receiver_id){
+
+        $MyServer = new SERVER("projectdb", "transaction_details");
+        $MyServer->Server_Conn();
+        $MyServer_sql = "SELECT * FROM " . $MyServer->get_table() . " WHERE `sender_id` = $sender_id AND `receiver_id` = $receiver_id";
+
+        $result = $MyServer->get_ServerConnection()->query($MyServer_sql);
+
+        $TransactionDetailsObject = PostObjectTools::TransactionDetailsRows_to_TransactionDetailsObjectArray($result);
+        
+        if($TransactionDetailsObject == null){
+            return null;
+        }else{
+            return $TransactionDetailsObject[0];
+        }
+
+    }
+
+    public static function ToReceivedStatus($sender_id, $receiver_id){
+        $MyServer = new SERVER("projectdb", "transaction_details");
+        $MyServer->Server_Conn();
+        $MyServer_sql = "UPDATE " . $MyServer->get_table() . " SET status = " . StringManipulate::wrap_string_qoutation("to received") . " WHERE `sender_id` = $sender_id AND `receiver_id` = $receiver_id";
+        $MyServer->get_ServerConnection()->query($MyServer_sql);
+
+    }
+
+    public static function ReceivedStatus($receiver_id, $sender_id){
+        $MyServer = new SERVER("projectdb", "transaction_details");
+        $MyServer->Server_Conn();
+        $MyServer_sql = "UPDATE " . $MyServer->get_table() . " SET status = " . StringManipulate::wrap_string_qoutation("received") . " WHERE `sender_id` = $receiver_id AND `receiver_id` = $sender_id";
+        $MyServer->get_ServerConnection()->query($MyServer_sql);
+
+
+    }
+
+    
+}
+
+
 
 
 

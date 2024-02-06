@@ -374,7 +374,7 @@ if(isset($_POST['review_button'])){
                                         <!-- post info -->
                                         <div class="row justify-content-center text-start p-0 px-2 pb-2 m-0 mt-2 gap-1 overflow-auto" style="max-width: 250px;">
                                             <!-- item name -->
-                                            <input class="d-none" type="text" name="item" id="item" maxlength="50" value="<?php echo $PostArray[$i]->itemName; ?>">
+                                            <input class="d-none" type="text" name="item" id="item" maxlength="60" value="<?php echo $PostArray[$i]->itemName; ?>">
                                             <h1 class="fw-semibold text-break fs-6 px-2 m-0 mt-1" style="overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; display: -webkit-box;">
                                                 <?php echo $PostArray[$i]->itemName; ?>
                                             </h1>
@@ -390,6 +390,14 @@ if(isset($_POST['review_button'])){
                                             <p class="fw-semibold px-2 p-0 m-0 rounded" style="color: var(--secondary);" id="detailed_paymentMethod">
                                                 
                                                 <?php echo $PostArray[$i]->payment_method; ?>
+                                                
+                                            </p>
+
+
+                                            <p class="fw-semibold px-2 p-0 m-0 rounded" style="color: var(--secondary);" id="exchange_method">
+                                                Delivery Type: 
+                                                <?php echo $PostArray[$i]->exchange_method; ?>
+                                                
                                             </p>
 
                                             <!-- <input class="d-none" type="text" name="post_id" id="post_id"  value="">
@@ -510,6 +518,12 @@ if(isset($_POST['review_button'])){
                                                     <?php echo $PostObject->category; ?>
                                                     
                                                 </p>
+
+                                                <p class="col-12 text-center rounded m-0 mb-2 p-2" style="background: #ac55df2f;">
+                                                    <?php echo $PostObject->exchange_method; ?>
+                                                    
+                                                </p>
+                                                
                                             </div>
 
                                             <!-- desc -->

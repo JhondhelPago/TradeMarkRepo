@@ -1,20 +1,33 @@
 <?php 
 require "../php/EssentialClasses.php";
 
-$MyServer = new SERVER("projectdb", "offer_pool");
-$MyServer->Server_Conn();
+$ArrivalTime = TimeCalcu::Arrival_time("3:15", "0:29");
 
-$sql = "SELECT * FROM " . $MyServer->get_table() . " WHERE `Email` = " . StringManipulate::wrap_string_qoutation("firstentry@gmail.com");
-$MyServer->get_ServerConnection()->query($sql);
+echo $ArrivalTime;
 
-$result = $MyServer->get_ServerConnection()->query($sql);
 
-$row = $result->fetch_assoc();
+echo "<br>";
 
-while($row){
-    echo $row['User_id'];
-    echo "<br>";
-}
+
+$Time_remaining = TimeCalcu::CalculateTimeDif("3:20", "3:45");
+
+echo $Time_remaining;
+
+echo "<br>";
+echo "<br>";
+
+
+$Time_remaining = TimeCalcu::CalculateTimeDif("3:15", "3:45");
+
+echo $Time_remaining;
+
+echo "<br>";
+echo "<br>";
+
+
+$Percentage = TimeCalcu::time_percentage("3:15", "3:55", "3:45");
+
+echo $Percentage;
 
 
 

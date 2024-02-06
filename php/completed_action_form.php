@@ -8,8 +8,8 @@ if(isset($_POST['complete_submit'])){
     $MyPostServer->Server_Conn();
 
     $MyPostServer_sql_move = "INSERT INTO history_post_img
-    (`id`, `User_Id`, `Email`, `name`, `image`, `item_Condition`, `category`, `description`, `payment_method`, `price`, `Proposals`, `Date`, `Time`)" . 
-    " SELECT `id`, `User_Id`, `Email`, `name`, `image`, `item_Condition`, `category`, `description`, `payment_method`, `price`, `Proposals`, `Date`, `Time` 
+    (`id`, `User_Id`, `Email`, `name`, `image`, `item_Condition`, `category`, `description`, `payment_method`, `price`, `Proposals`, `exchange_method`, `Date`, `Time`)" . 
+    " SELECT `id`, `User_Id`, `Email`, `name`, `image`, `item_Condition`, `category`, `description`, `payment_method`, `price`, `Proposals`, `exchange_method`,  `Date`, `Time` 
     FROM  " . $MyPostServer->get_table() . " WHERE `id` = " . $_POST['post_id'];
 
     //moved

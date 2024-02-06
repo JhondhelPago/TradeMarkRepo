@@ -235,6 +235,17 @@ require "php/config.php";
                                         <label for="itemCondition">Condition</label>
                                     </div>
 
+                                    <div class="form-floating px-0">
+                                        <select name="exchange_method" id="exchange_method" class="form-select" required>
+                                            <option value="" hidden selected>Choose Delivery Type</option>
+                                            <option value="shipment">shipment</option>
+                                            <option value="meetup">meetup</option>
+                                            
+                                        </select>
+                                        <label for="exchange_method">Delivery</label>
+                                    </div>
+
+
                                     <!-- desc -->
                                     <div class="form-floating px-0">
                                         <textarea name="itemDescrip" id="itemDetails" class="form-control rounded lead" cols="30" rows="10" placeholder="Item Dectription" style="height: 150px;"></textarea>
@@ -321,6 +332,17 @@ require "php/config.php";
                                                 </select>
                                                 <label for="itemCondition">Condition</label>
                                             </div>
+
+                                            <div class="form-floating px-0">
+                                                <select name="exchange_method" id="exchange_method" class="form-select" required>
+                                                    <option value="" hidden selected>Choose Delivery Type</option>
+                                                    <option value="shipment">shipment</option>
+                                                    <option value="meetup">meetup</option>
+                                                    
+                                                </select>
+                                                <label for="exchange_method">Delivery</label>
+                                            </div>
+
                                         </div>
                                     </div>
                                     
@@ -412,6 +434,16 @@ require "php/config.php";
                                             <option value="used">Used</option>
                                         </select>
                                         <label for="itemCondition">Condition</label>
+                                    </div>
+
+                                    <div class="form-floating px-0">
+                                        <select name="exchange_method" id="exchange_method" class="form-select" required>
+                                            <option value="" hidden selected>Choose Delivery Type</option>
+                                            <option value="shipment">shipment</option>
+                                            <option value="meetup">meetup</option>
+                                            
+                                        </select>
+                                        <label for="exchange_method">Delivery</label>
                                     </div>
 
                                     <!-- desc -->

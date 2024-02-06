@@ -200,6 +200,9 @@ $TraderInformation = $DetailTraderArray[0];
                                     <div class="col-sm-12 col-md d-flex align-items-center justify-content-center rounded pt-2 p-1 m-0" style="background-color: #ac55df2f;">
                                         <h6 class="lh-base fw-normal text-center"><?php echo $itemInformation->category; ?></h6>
                                     </div>
+                                    <div class="col-sm-12 col-md d-flex align-items-center justify-content-center rounded pt-2 p-1 m-0" style="background-color: #ac55df2f;">
+                                        <h6 class="lh-base fw-normal text-center"><?php echo $itemInformation->exchange_method; ?></h6>
+                                    </div>
                                 </div>
 
                                 <h6 class="fw-light p-3 pt-4 pb-0 mb-3">Description:</h6>

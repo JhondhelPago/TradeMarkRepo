@@ -15,8 +15,10 @@ if(isset($_POST['submit'])){
     $PaymentMethod = "top-up trade";
     $Price = $_POST['price'];
     $Proposals ="None";
+    $Exchange_Method = $_POST['exchange_method'];
     $Date = MyDateTime::DateNow();
     $Time = MyDateTime::TimeNow();
+    $Transaction_id =  "None";
 
     $total_num_files = count($_FILES['uploadImg']['name']);
 
@@ -49,10 +51,10 @@ if(isset($_POST['submit'])){
 
     $MyServer = new SERVER("projectdb", "post_img");
     $MyServer->Server_Conn();
-    $MyServer_sql = "INSERT INTO " . $MyServer->get_table() . " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $MyServer_sql = "INSERT INTO " . $MyServer->get_table() . " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $stmt = $MyServer->get_ServerConnection()->prepare($MyServer_sql);
-    $stmt->bind_param("iisssssssdsss", $id, $User_Id, $Email, $ItemName, $imageNameArray, $ItemCondition, $Category, $Description, $PaymentMethod, $Price, $Proposals, $Date, $Time);
+    $stmt->bind_param("iisssssssdsssss", $id, $User_Id, $Email, $ItemName, $imageNameArray, $ItemCondition, $Category, $Description, $PaymentMethod, $Price, $Proposals, $Exchange_Method, $Date, $Time, $Transaction_id);
 
     $stmt->execute();
 

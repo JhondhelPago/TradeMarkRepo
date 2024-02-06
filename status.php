@@ -427,6 +427,25 @@ if($ActivePost->userActivePostArray != null){
 
                                                         if($UserOffer->OfferObject->Status == "ACCEPTED"){
                                                             echo "<b class=\"col-12 fs-4 fw-semibold rounded px-3 py-1 d-flex justify-content-center\" style=\"background: #62e4945e;\">ACCEPTED</b>";
+
+                                                            ?>
+                                                                <div class="row m-1 mt-2 mb-3">
+
+                                                            
+                                                                    <form method="post" action="php/Transaction_Form_Action.php">
+                                                                        <input  type="hidden" name="PostObjectID" value="<?php echo $UserOffer->PostObject->get_post_id(); ?>">
+                                                                        <input  type="hidden" name="OfferObjectID" value="<?php echo $UserOffer->OfferObject->get_offer_id(); ?>">
+                                                                        <input type="hidden" name="delivery_method" value="<?php echo $UserOffer->PostObject->exchange_method; ?>">
+                                                                        <input  type="hidden" name="MethodTC" value="trade coin">
+                                                                        <button class="btn btn-success py-3 fs-5" style="width: 100%; margin-bottom: 10px;" type="submit" name="transaction_button">Transaction Details</button>
+                                                                    
+                                                                    </form>
+            
+                                                                </div>
+
+                                                            <?php
+                                                                    
+
                                                         }elseif($UserOffer->OfferObject->Status == "QEUED"){
                                                             echo "<b class=\"col-12 fs-4 fw-semibold rounded px-3 py-1 d-flex justify-content-center\" style=\"background: #bdbcbc2f;\">QEUED</b>";
                                                         }elseif($UserOffer->OfferObject->Status == "DECLINED"){
@@ -439,6 +458,8 @@ if($ActivePost->userActivePostArray != null){
 
                                                     
                                                 </p>
+
+
                                                
                                                 <div class="row m-0 mt-2 mb-3">
                                                         
@@ -455,7 +476,8 @@ if($ActivePost->userActivePostArray != null){
 
 
                                     <?php
-                                        foreach($TopUpOffers as $UserOffer){
+                                        if($TopUpOffers != null){
+                                            foreach($TopUpOffers as $UserOffer){
                                         ?>
                                         
 
@@ -466,7 +488,6 @@ if($ActivePost->userActivePostArray != null){
                                                         <img class="img-fluid rounded" src="<?php echo "offer-images-files/" . $UserOffer->OfferObject->Display_Item_Thumbnail(); ?>" alt="Product Image" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
                         
                                                     </div>
-
                                                     
                                                     <!-- details -->
                                                     <div class="col col-sm-12 col-xl py-2 d-grid">
@@ -516,12 +537,19 @@ if($ActivePost->userActivePostArray != null){
                                                                     
                                                                     echo "<b class=\"col-12 fs-4 fw-semibold rounded px-3 py-1 d-flex justify-content-center\" style=\"background: #62e4945e;\">ACCEPTED</b>";
                                                                     ?>
-                                                                    <p></p>
+                                                                    
                                                                         <div class="row m-1 mt-2 mb-3">
-                                                                            <form >
-                                                                                <button class="btn btn-success py-3 fs-5" style="width: 100%; margin-bottom: 10px;" type="submit" >Received</button>
-                                                                                <button class="btn btn-warning py-3 fs-5" style="width: 100%; " type="submit" >Cancel</button>
-                                                                            </form>
+
+                                                                    
+                                                                                <form method="post" action="php/Transaction_Form_Action.php">
+                                                                                    <input  type="hidden" name="PostObjectID" value="<?php echo $UserOffer->PostObject->get_post_id(); ?>">
+                                                                                    <input  type="hidden" name="OfferObjectID" value="<?php echo $UserOffer->OfferObject->get_offer_id(); ?>">
+                                                                                    <input type="hidden" name="delivery_method" value="<?php echo $UserOffer->PostObject->exchange_method; ?>">
+
+                                                                                    <button class="btn btn-success py-3 fs-5" style="width: 100%; margin-bottom: 10px;" type="submit" name="transaction_button">Transaction Details</button>
+
+                                                                                </form>
+
                                                                         </div>
 
                                                                     <?php
@@ -548,6 +576,7 @@ if($ActivePost->userActivePostArray != null){
                                                 </div>
 
                                         <?php
+                                            }
                                         }
                                         ?>
 
@@ -603,18 +632,18 @@ if($ActivePost->userActivePostArray != null){
                                 <div class="row shadow justify-content-center align-items-center rounded bg-light">
                                     <!-- pic -->
                                     <div class="col-12 col-xl-5 justify-content-center align-items-center p-0 ms-3 ms-lg-1 m-3 d-inline-grid rounded" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
-                                        <img class="img-fluid rounded" src="<?php echo "image-files/" . $UserOffer->PostObject->Display_Item_Thumbnail(); ?>" alt="Product Image" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
+                                        <img class="img-fluid rounded" src="<?php echo "offer-images-files/" . $UserOffer->OfferObject->Display_Item_Thumbnail(); ?>" alt="Product Image" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
                                         </div>
                                         <!-- details -->
                                         <div class="col col-sm-12 col-xl py-2 d-grid">
-                                            <h1 class="display-6 fw-semibold mb-3"><?php echo $UserOffer->PostObject->itemName; ?></h1>
+                                            <h1 class="display-6 fw-semibold mb-3"><?php echo $UserOffer->OfferObject->ItemName; ?></h1>
                                             <div class="row justify-content-evenly align-items-center mb-2 m-0s">
-                                                <p class="col lead"><?php echo $UserOffer->PostObject->get_email(); ?></p>
+                                                <p class="col lead">  <?php echo $UserOffer->PostObject->get_email(); ?></p>
                                                 <p class="col lead d-flex d-xxl-inline justify-content-end">#10199999</p>
                                             </div>
                                             <div class="row justify-content-evenly align-items-center m-0s">
                                                 <p class="col lead"><?php echo $UserOffer->UserInfoObject->Address; ?></p>
-                                                <p class="col lead d-flex d-xxl-inline justify-content-end">Proposal Date: <?php echo $UserOffer->OfferObject->Date; ?></p>
+                                                <p class="col lead d-flex d-xxl-inline justify-content-end">Proposal Date: <br> <?php echo $UserOffer->OfferObject->Date; ?></p>
 
 
                                                 <form class="col btn btn-outline-warning text-dark border border-dark rounded m-2" method="post" action="php/post_viewer_action.php">
@@ -649,12 +678,18 @@ if($ActivePost->userActivePostArray != null){
                                                                     
                                                                     echo "<b class=\"col-12 fs-4 fw-semibold rounded px-3 py-1 d-flex justify-content-center\" style=\"background: #62e4945e;\">ACCEPTED</b>";
                                                                     ?>
-                                                                    <p></p>
+                                                                 
                                                                         <div class="row m-1 mt-2 mb-3">
-                                                                            <form >
-                                                                                <button class="btn btn-success py-3 fs-5" style="width: 100%; margin-bottom: 10px;" type="submit" >Received</button>
-                                                                                
+
+                                                                            <form method="post" action="php/Transaction_Form_Action.php">
+                                                                                <input  type="hidden" name="PostObjectID" value="<?php echo $UserOffer->PostObject->get_post_id(); ?>">
+                                                                                <input  type="hidden" name="OfferObjectID" value="<?php echo $UserOffer->OfferObject->get_offer_id(); ?>">
+                                                                                <input type="hidden" name="delivery_method" value="<?php echo $UserOffer->PostObject->exchange_method; ?>">
+
+                                                                                <button class="btn btn-success py-3 fs-5" style="width: 100%; margin-bottom: 10px;" type="submit" name="transaction_button">Transaction Details</button>
+                                                                            
                                                                             </form>
+          
                                                                         </div>
 
                                                                     <?php
@@ -787,12 +822,13 @@ if($ActivePost->userActivePostArray != null){
                                                                                         }else{
                                                                                             ?>
                                                                                             
-                                                                                            <form class="col btn btn-outline-success text-dark border border-dark rounded m-2" method="post" action="php/completed_action_form.php" >
-                                                                                                <input type="hidden" name="offer_id" value="<?php echo $Offer->get_offer_id(); ?>">
-                                                                                                <input type="hidden" name="post_id" value="<?php echo $PostAndOffer->PostObject->get_post_id(); ?>">
-                                                                                                <button class="col btn text-dark" type="submit" name="complete_submit">Complete</button>
-                                                                                            </form>
-
+                                                                                            <form class="col btn btn-outline-success text-dark border border-dark rounded m-2" method="post" action="php/Transaction_Form_Action.php" >
+                                                                                                <input  type="hidden" name="PostObjectID" value="<?php echo $PostAndOffer->PostObject->get_post_id(); ?>">
+                                                                                                <input  type="hidden" name="OfferObjectID" value="<?php echo $Offer->get_offer_id(); ?>">
+                                                                                                <input  type="hidden" name="delivery_method" value="<?php echo $PostAndOffer->PostObject->exchange_method; ?>">
+                                                                                                <input  type="hidden" name="MethodTC" value="trade coin">
+                                                                                                <button class="col btn text-dark" type="submit" name="transaction_button">Transaction Details</button>
+                                                                                        </form>
 
                                                                                         <?php
                                                                                         }
@@ -869,7 +905,7 @@ if($ActivePost->userActivePostArray != null){
 
                                                         <form class="col btn btn-outline-warning text-dark border border-dark rounded m-2" method="post" action="php/post_viewer_action.php">
                                                             <input type="hidden" name="post_id" value="<?php echo $PostAndOffer->PostObject->get_post_id(); ?>">
-                                                            <button class="col btn text-dark" type="submit" name="submit" >Cancel Post</button>
+                                                            <button class="col btn text-dark" type="submit" name="submit" >Ship Now</button>
                                                         </form> 
                                                     </div>
                                                 </div>
@@ -921,10 +957,11 @@ if($ActivePost->userActivePostArray != null){
                                                                     ?>
                                                                     
 
-                                                                        <form class="col btn btn-outline-success text-dark border border-dark rounded m-2" method="post" action="php/completed_action_form.php" >
-                                                                            <input type="hidden" name="offer_id" value="<?php echo $Offer->get_offer_id(); ?>">
-                                                                            <input type="hidden" name="post_id" value="<?php echo $PostAndOffer->PostObject->get_post_id(); ?>">
-                                                                            <button class="col btn text-dark" type="submit" name="complete_submit">Complete</button>
+                                                                        <form class="col btn btn-outline-success text-dark border border-dark rounded m-2" method="post" action="php/Transaction_Form_Action.php" >
+                                                                                <input  type="hidden" name="PostObjectID" value="<?php echo $PostAndOffer->PostObject->get_post_id(); ?>">
+                                                                                <input  type="hidden" name="OfferObjectID" value="<?php echo $Offer->get_offer_id(); ?>">
+                                                                                <input type="hidden" name="delivery_method" value="<?php echo $PostAndOffer->PostObject->exchange_method; ?>">
+                                                                                <button class="col btn text-dark" type="submit" name="transaction_button">Transaction Details</button>
                                                                         </form>
                                                                     <?php
                                                                     }
@@ -941,7 +978,9 @@ if($ActivePost->userActivePostArray != null){
                                                     echo  "No Offer Yet";
                                                 }
                                                 ?>
+                                                
                                                 </div>
+                                               
                                         </div>
 
                                 <?php
@@ -1058,10 +1097,11 @@ if($ActivePost->userActivePostArray != null){
                                                                             ?>
                                                                             
 
-                                                                                <form class="col btn btn-outline-success text-dark border border-dark rounded m-2" method="post" action="php/completed_action_form.php" >
-                                                                                    <input type="hidden" name="offer_id" value="<?php echo $Offer->get_offer_id(); ?>">
-                                                                                    <input type="hidden" name="post_id" value="<?php echo $PostAndOffer->PostObject->get_post_id(); ?>">
-                                                                                    <button class="col btn text-dark" type="submit" name="complete_submit">Complete</button>
+                                                                                <form class="col btn btn-outline-success text-dark border border-dark rounded m-2" method="post" action="php/Transaction_Form_Action.php" >
+                                                                                    <input  type="hidden" name="PostObjectID" value="<?php echo $PostAndOffer->PostObject->get_post_id(); ?>">
+                                                                                    <input  type="hidden" name="OfferObjectID" value="<?php echo $Offer->get_offer_id(); ?>">
+                                                                                    <input type="hidden" name="delivery_method" value="<?php echo $PostAndOffer->PostObject->exchange_method; ?>">
+                                                                                    <button class="col btn text-dark" type="submit" name="transaction_button">Transaction Details</button>
                                                                                 </form>
                                                                             <?php
                                                                             }
