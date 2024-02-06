@@ -176,7 +176,7 @@ class Post{
 
     //constructor for class attributes
 
-    public function __construct($postID, $user_Id, $email, $itemName, $imageArray, $item_condition, $category, $description, $payment_method, $price, $proposals_ids_array, $exchange_method, $date, $time, $transaction_id)
+    public function __construct($postID, $user_Id, $email, $itemName, $imageArray, $item_condition, $category, $description, $payment_method, $price, $proposals_ids_array, $exchange_method, $date, $time)
     {
         $this->post_ID = $postID;
         $this->User_Id = $user_Id;
@@ -192,7 +192,7 @@ class Post{
         $this->exchange_method = $exchange_method;
         $this->date = $date;
         $this->time = $time;
-        $this->transaction_id = $transaction_id;
+        
         
 
 
@@ -604,7 +604,7 @@ class PostObjectTools{
             while($row = $result->fetch_assoc()){
                 //turning the rows data into PostObjectArray that holds tha data from post_img table
 
-                $PostObjectArray[] = new Post($row['id'], $row['User_Id'], $row['Email'], $row['name'], $row['image'], $row['Item_Condition'], $row['category'], $row['description'], $row['payment_method'], $row['price'], $row['Proposals'], $row['exchange_method'], $row['Date'], $row['Time'], $row['transaction_id']);
+                $PostObjectArray[] = new Post($row['id'], $row['User_Id'], $row['Email'], $row['name'], $row['image'], $row['Item_Condition'], $row['category'], $row['description'], $row['payment_method'], $row['price'], $row['Proposals'], $row['exchange_method'], $row['Date'], $row['Time']);
             }
         
             return $PostObjectArray;
@@ -1304,6 +1304,57 @@ class TransactionCheck{
     }
 
     
+}
+
+function TransactionComplete($sender_id, $receiver_id){
+    //get the record for the post_id
+    $MyPostServer = new SERVER("projectdb", "post_img");
+    $MyPostServer->Server_Conn();
+
+    $MyPostServer_sql_move = "INSERT INTO history_post_img
+    (`id`, `User_Id`, `Email`, `name`, `image`, `item_Condition`, `category`, `description`, `payment_method`, `price`, `Proposals`, `exchange_method`, `Date`, `Time`)" . 
+    " SELECT `id`, `User_Id`, `Email`, `name`, `image`, `item_Condition`, `category`, `description`, `payment_method`, `price`, `Proposals`, `exchange_method`,  `Date`, `Time` 
+    FROM  " . $MyPostServer->get_table() . " WHERE `id` = " . $sender_id;
+
+    //moved
+    $MyPostServer->get_ServerConnection()->query($MyPostServer_sql_move);
+
+    $MyPostServer_sql_delete = "DELETE FROM " . $MyPostServer->get_table() . " WHERE `id` = " . $sender_id;
+
+    //deleted
+    $MyPostServer->get_ServerConnection()->query($MyPostServer_sql_delete);
+    
+    //store to history_post_img
+    
+    
+
+
+
+
+    //get the record for the offer_id
+    $MyOfferServer = new SERVER("projectdb", "offer_pool");
+    $MyOfferServer->Server_Conn();
+
+    $MyOfferServer_sql_move = "INSERT INTO history_offer_pool 
+    (`id`, `selectedpost_id`, `Email`, `ItemName`, `Category`, `item_Condition`, `Method`, `Price`, `Description`, `images`, `Date`, `Time`, `status`)" . 
+    " SELECT `id`, `selectedpost_id`, `Email`, `ItemName`, `Category`, `item_Condition`, `Method`, `Price`, `Description`, `images`, `Date`, `Time`, `status` 
+    FROM " . $MyOfferServer->get_table() . " WHERE `id` = " . $receiver_id;
+
+    //moved
+    $MyOfferServer->get_ServerConnection()->query($MyOfferServer_sql_move);
+
+
+    $MyOfferServer_sql_delete = "DELETE FROM " . $MyOfferServer->get_table() . " WHERE `id` = " . $receiver_id;
+
+    //deleted
+    $MyOfferServer->get_ServerConnection()->query($MyOfferServer_sql_delete);
+
+
+    //store to history_offer_pool
+
+
+
+    header('Location: ../status.php');
 }
 
 

@@ -1,5 +1,6 @@
 <?php
 require "php/EssentialClasses.php";
+require "php/SecondaryClasses.php";
 session_start();
 
 $MyPostServer = new SERVER("projectdb", "post_img");
@@ -23,6 +24,68 @@ $ThisOfferObjectUserInfo = new UserInfoRetriever($OfferObject->Email);
 
 // true if this is trader session, false if its receiver session
 $TraderView = $_SESSION['user_id'] == $ThisPostObjectUserInfo->userInforamation->user_id();
+
+
+$Sender_id;
+$Receiver_id;
+$SenderItem;
+$ReceiverItem;
+
+if($_SESSION['user_id'] == $ThisPostObjectUserInfo->userInforamation->user_Id()){
+    $Sender_id = $ThisPostObjectUserInfo->userInforamation->user_Id();
+    $Receiver_id = $ThisOfferObjectUserInfo->userInforamation->user_Id();
+
+    $SenderInfo = $ThisPostObjectUserInfo->userInforamation;
+    $SenderItem = $PostObject;
+
+    $ReceiverInfo = $ThisOfferObjectUserInfo->userInforamation;
+    $ReceiverItem = $OfferObject;
+    
+
+}elseif($_SESSION['user_id'] == $ThisOfferObjectUserInfo->userInforamation->user_Id()){
+    $Sender_id = $ThisOfferObjectUserInfo->userInforamation->user_Id();
+    $Receiver_id = $ThisPostObjectUserInfo->userInforamation->user_Id();
+
+    $SenderInfo = $ThisOfferObjectUserInfo->userInforamation;
+    $SenderItem = $OfferObject;
+
+    $ReceiverInfo = $ThisPostObjectUserInfo->userInforamation;
+    $ReceiverItem = $PostObject;
+}
+
+
+// check if there is a record existed in the transaction_details using the sender_id and user_id
+if($SenderItem->tableOrientation == "post_img"){
+    $S_id = $SenderItem->get_post_id();
+}else{
+    $S_id = $SenderItem->get_offer_id();
+}
+
+if($ReceiverItem->tableOrientation == "post_img"){
+    $R_id = $ReceiverItem->get_post_id();
+}else{
+    $R_id = $ReceiverItem->get_offer_id();
+}
+
+$Sender_transaction_record =  TransactionCheck::TransactionDetailsExist($S_id, $R_id);
+$Receiver_transaction_record = TransactionCheck::TransactionDetailsExist($R_id, $S_id);
+
+if($Sender_transaction_record != null or $Receiver_transaction_record!= null){
+
+    // first try to using the parameter arragement $sender_id, $receiver_id
+    try{
+        TransactionComplete($S_id, $R_id);
+
+    }catch(Exception $e){
+        TransactionComplete($R_id, $S_id);
+
+        
+
+
+    }
+}
+
+
 
 
 
@@ -162,8 +225,8 @@ $TraderView = $_SESSION['user_id'] == $ThisPostObjectUserInfo->userInforamation-
                     <div class="container-fluid p-1" style="min-height: 85vh; max-height: 85vh;">
                         <div class="display-1 fw-bold d-flex justify-content-center text-center header1 mb-3"><?php if($TraderView){echo "Your Item To Ship";}else{echo "Your Item To Received";};?></div>
 
-                        <!-- progress bar -->
-                        <div class="progressBar d-flex bg-black rounded-pill border-top border-bottom border-1 border-black text-center position-relative m-0 mx-5 p-0" style="height: .5rem;" id="progressbar1">
+                         <!-- progress bar -->
+                         <div class="progressBar d-flex bg-black rounded-pill border-top border-bottom border-1 border-black text-center position-relative m-0 mx-5 p-0" style="height: .5rem;" id="progressbar1">
                             <div class="progressFill rounded-pill" style="width: 100%; background: linear-gradient(117deg, #3D53C9 40%, #593DC9 70%);"></div>
 
                             <div class="position-absolute top-50 translate-middle-y text-center text-white bg-dark border border-2 border-black rounded-circle m-0 p-2 progressPoint0" style="width: 2em; height: 2em; left: calc(0% - 1em)" id="point0">
@@ -188,51 +251,171 @@ $TraderView = $_SESSION['user_id'] == $ThisPostObjectUserInfo->userInforamation-
                         </div>
                         
                         <!-- <p class="row justify-content-center display-4 fw-semibold my-3 d-md-none">Current Progress</p> -->
-
+                       
                         <!-- item card -->
                         <div class="row shadow justify-content-center align-items-center rounded bg-white" style="margin-top: 5em;">
                             <!-- pic -->
                             <div class="col-12 col-xl-5 justify-content-center align-items-center p-0 m-3 d-inline-grid rounded overflow-auto" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
-                                <img class="img-fluid rounded" style="cursor: pointer;" id="imgs" onclick="enlargeImg()" src="<?php echo "image-files/" . $PostObject->Display_Item_Thumbnail(); ?>" alt="Item Image" >
+                                <img class="img-fluid rounded" style="cursor: pointer;" id="imgs" onclick="enlargeImg()" src="<?php if($SenderItem->tableOrientation == "post_img"){echo "image-files/" . $SenderItem->Display_Item_Thumbnail();}else{echo "offer-images-files/" . $SenderItem->Display_Item_Thumbnail();};?>" alt="Item Image" >
                             </div>
                             <!-- details -->
                             <div class="col col-sm-12 col-xl py-2 d-grid">
-                                <h1 class="display-6 fw-semibold mb-3"></h1>
+                                <h1 class="display-6 fw-semibold mb-3"><?php if($SenderItem->tableOrientation == "post_img"){echo $SenderItem->itemName; }else{echo $SenderItem->ItemName;}; ?></h1>
                                 <div class="row justify-content-evenly align-items-center mb-2 m-0s">
-                                    <p class="col lead"><?php if($TraderView){echo $ThisOfferObjectUserInfo->userInforamation->UserName;}else{echo $ThisPostObjectUserInfo->userInforamation->UserName;};?></p>
-                                    <p class="col lead"><?php if($TraderView){echo $ThisOfferObjectUserInfo->userInforamation->Mobile_number;}else{echo $ThisPostObjectUserInfo->userInforamation->Mobile_number;};?></p>
-                                    <p class="col lead"><?php if($TraderView){echo $ThisOfferObjectUserInfo->userInforamation->Email;}else{echo $ThisPostObjectUserInfo->userInforamation->Email;};?></p>
-                                    <p class="col lead d-flex d-xxl-inline justify-content-end">#10199999</p>
+                                    <p class="col lead"><?php echo $ReceiverInfo->UserName; ?></p>
+                                    <p class="col lead"><?php echo $ReceiverInfo->Mobile_number; ?></p>
+                                    <p class="col lead"><?php echo $ReceiverInfo->Email; ?></p>
+                                    <p class="col lead d-flex d-xxl-inline justify-content-end"><?php if($Receiver_transaction_record != null){echo  $Receiver_transaction_record->id; }?></p>
                                 </div>
                                 <div class="row justify-content-evenly align-items-center m-0s">
-                                    <p class="col lead">Origin Place: <?php echo $ThisPostObjectUserInfo->userInforamation->Address . ", " . $ThisPostObjectUserInfo->userInforamation->City; ?></p>
+                                    <p class="col lead">Origin Place: <?php echo $SenderInfo->Address . " " .$SenderInfo->City; ?></p>
                             
-                                    <p class="col lead d-flex d-xxl-inline justify-content-end">Destination Place: <?php echo $ThisOfferObjectUserInfo->userInforamation->Address . ", " . $ThisOfferObjectUserInfo->userInforamation->City; ?></p>
+                                    <p class="col lead d-flex d-xxl-inline justify-content-end">Destination Place:  <?php echo $ReceiverInfo->Address . " " . $ReceiverInfo->City; ?></p>
                                 </div>
                                 <div class="row fs-light mb-2">
                                     <div class="col-6 justify-content-center">
                                         <div class="d-flex justify-content-center">Method:</div>
-                                        <b class="fw-semibold rounded px-3 py-1 d-flex justify-content-center text-center" style="background: #8393ec2f;">transaction method</b>
+                                        <b class="fw-semibold rounded px-3 py-1 d-flex justify-content-center text-center" style="background: #8393ec2f;"><?php if($SenderItem->tableOrientation == "post_img"){echo $SenderItem->payment_method;}else{echo $SenderItem->Method;}; ?></b>
                                     </div>
                                     <div class="col-6 justify-content-center">
                                         <div class="d-flex justify-content-center">Price:</div>
-                                        <b class="fw-semibold rounded px-3 py-1 d-flex justify-content-center text-break text-center" style="background: #7c62e42f;">price</b>
+                                        <b class="fw-semibold rounded px-3 py-1 d-flex justify-content-center text-break text-center" style="background: #7c62e42f;"><?php if($SenderItem->tableOrientation == "post_img"){echo $SenderItem->price;}else{echo $SenderItem->Price;};?></b>
                                     </div>
                                 </div>
                                 <div class="row m-0 mt-2 mb-3">
-                                    <?php
-                                        if($TraderView){
-                                            ?>
-                                            <button class="btn btn-outline-warning text-black border border-dark py-3 fs-5">Ship Now</button>
+
+                                   <?php
+
+                                        if($Sender_transaction_record == null){
+                                        ?>
+                                        
+                                            <form  class="btn btn-outline-warning text-black border border-dark py-3 fs-5" method="post" action="php/ShipNowAction.php">
+                                            
+                                                <input type="hidden" name="sender_id" value="<?php if($SenderItem->tableOrientation == "post_img"){echo $SenderItem->get_post_id();}else{echo $SenderItem->get_offer_id();} ?>">
+                                                <input type="hidden" name="receiver_id" value="<?php if($ReceiverItem->tableOrientation == "post_img"){echo $ReceiverItem->get_post_id();}else{echo $ReceiverItem->get_offer_id();} ?>">
+                                                <input type="hidden" name="sender_location" value="<?php echo $SenderInfo->City; ?>">
+                                                <input type="hidden" name="receiver_location" value="<?php echo $ReceiverInfo->City; ?>">
+                                                <button class="btn text-black" type="submit" name="ship_now">Ship Now</button>
+                                            </form>
+
                                         <?php
                                         }
                                     ?>
+
+                                        
+
                                 </div>
                             </div>
                         </div>
 
-                       
+                        <div class="display-1 fw-bold d-flex justify-content-center text-center header1 my-3">Trader Partner Item</div>
 
+                        <!-- progress bar -->
+                        <div class="progressBar d-flex bg-black rounded-pill border-top border-bottom border-1 border-black text-center position-relative m-0 mx-5 p-0" style="height: .5rem;" id="progressbar2">
+                            <div class="progressFill rounded-pill" style="width: 100%; background: linear-gradient(117deg, #3D53C9 40%, #593DC9 70%);"></div>
+
+                            <div class="position-absolute top-50 translate-middle-y text-center text-white bg-dark border border-2 border-black rounded-circle m-0 p-2 progressPoint0" style="width: 2em; height: 2em; left: calc(0% - 1em)" id="point0">
+                                <i class="top-50 translate-middle m-0 p-0 position-absolute fa-solid fa-check" id="point0Check2"></i>
+                                <p class="top-100 translate-middle-x m-2 p-0 position-absolute text-black fw-semibold ">To Ship</p>
+                            </div>
+                            <div class="position-absolute top-50 translate-middle-y text-center text-white bg-dark border border-2 border-black rounded-circle m-0 p-2 progressPoint25" style="width: 2em; height: 2em; left: calc(33% - 1em);" id="point33">
+                                <i class="top-50 translate-middle m-0 p-0 position-absolute fa-solid fa-check" id="point33Check2"></i>
+                                <i class="top-50 translate-middle m-0 p-0 position-absolute fa-solid fa-minus" id="point33Wait2"></i>
+                                <p class="top-100 translate-middle-x m-2 p-0 position-absolute text-black fw-semibold ">Out for Delivery</p>
+                            </div>
+                            <div class="position-absolute top-50 translate-middle-y text-center text-white bg-dark border border-2 border-black rounded-circle m-0 p-2 progressPoint75" style="width: 2em; height: 2em; left: calc(67% - 1em);" id="point67">
+                                <i class="top-50 translate-middle m-0 p-0 position-absolute fa-solid fa-check" id="point67Check2"></i>
+                                <i class="top-50 translate-middle m-0 p-0 position-absolute fa-solid fa-minus" id="point67Wait2"></i>
+                                <p class="top-100 translate-middle-x m-2 p-0 position-absolute text-black fw-semibold ">Midpoint</p>
+                            </div>
+                            <div class="position-absolute top-50 translate-middle-y text-center text-white bg-dark border border-2 border-black rounded-circle m-0 p-2 progressPoint100" style="width: 2em; height: 2em; left: calc(100% - 1em);" id="point100">
+                                <i class="top-50 translate-middle m-0 p-0 position-absolute fa-solid fa-check" id="point100Check2"></i>
+                                <i class="top-50 translate-middle m-0 p-0 position-absolute fa-solid fa-minus" id="point100Wait2"></i>
+                                <p class="top-100 translate-middle-x m-2 p-0 position-absolute text-black fw-semibold ">To Receive</p>
+                            </div>
+                        </div>
+
+                        <!--                        
+                        <div class="row shadow justify-content-center align-items-center rounded bg-white" style="margin-top: 5rem;">
+                           
+                            <div class="col col-sm-12 col-xl py-2 pt-4 d-grid text-center">
+                                
+                                <h1 class="display-6 fw-semibold mb-3"></h1>
+                                <div class="row mb-2 m-0 align-items-center">
+                                    <p class="col lead text-start">CityCityCity CityCityCityCityCityCity</p>
+                                    <p class="col lead text-end">#10199999</p>
+                                </div>
+                                <div class="row m-0 align-items-center">
+                                    <p class="col lead text-start">Address Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, quam?</p>
+                                    <p class="col lead text-end">01/01/2024</p>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <div class="row shadow justify-content-center align-items-center rounded bg-white" style="margin-top: 5em;">
+                            <!-- pic -->
+                            <div class="col-12 col-xl-5 justify-content-center align-items-center p-0 m-3 d-inline-grid rounded overflow-auto" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
+                                <img class="img-fluid rounded" style="cursor: pointer;" id="imgs" onclick="enlargeImg()" src="<?php if($ReceiverItem->tableOrientation == "post_img"){echo "image-files/" . $ReceiverItem->Display_Item_Thumbnail();}else{echo "offer-images-files/" . $ReceiverItem->Display_Item_Thumbnail();};?>" alt="Item Image" >
+                            </div>
+                            <!-- details -->
+                            <div class="col col-sm-12 col-xl py-2 d-grid">
+                                <h1 class="display-6 fw-semibold mb-3"><?php if($ReceiverItem->tableOrientation == "post_img"){echo $ReceiverItem->itemName; }else{echo $ReceiverItem->ItemName;}; ?></h1>
+                                <div class="row justify-content-evenly align-items-center mb-2 m-0s">
+                                    <p class="col lead"><?php echo $SenderInfo->UserName;?></p>
+                                    <p class="col lead"><?php echo $SenderInfo->Mobile_number;?></p>
+                                    <p class="col lead"><?php echo $SenderInfo->Email;?></p>
+                                    <p class="col lead d-flex d-xxl-inline justify-content-end"><?php if($Sender_transaction_record != null){echo $Sender_transaction_record->id;}?></p>
+                                </div>
+                                <div class="row justify-content-evenly align-items-center m-0s">
+                                    <p class="col lead">Origin Place: <?php echo $ReceiverInfo->Address . " " . $ReceiverInfo->City?></p>
+                                    <p class="col lead d-flex d-xxl-inline justify-content-end">Destination Place: <?php echo $SenderInfo->Address . " " . $SenderInfo->City; ?></p>
+                                </div>
+                                <div class="row fs-light mb-2">
+                                    <div class="col-6 justify-content-center">
+                                        <div class="d-flex justify-content-center">Method:</div>
+                                        <b class="fw-semibold rounded px-3 py-1 d-flex justify-content-center text-center" style="background: #8393ec2f;"><?php if($ReceiverItem->tableOrientation == "post_img"){echo $ReceiverItem->payment_method;}else{echo $ReceiverItem->Method;};?></b>
+                                    </div>
+                                    <div class="col-6 justify-content-center">
+                                        <div class="d-flex justify-content-center">Price:</div>
+                                        <b class="fw-semibold rounded px-3 py-1 d-flex justify-content-center text-break text-center" style="background: #7c62e42f;"><?php if($ReceiverItem->tableOrientation == "post_img"){echo $ReceiverItem->price;}else{echo $ReceiverItem->Price;};?></b>
+                                    </div>
+                                </div>
+                                <!-- <div class="row m-0 mt-2 mb-3">
+                                    <button class="btn btn-outline-warning text-black border border-dark py-3 fs-5">Ship Now</button>
+                                </div> -->
+
+                                
+                                <?php
+                                    if($Receiver_transaction_record != null and $Receiver_transaction_record->status == "to received"){
+                                    ?>
+                                        <form class="btn btn-outline-success text-black border border-dark py-3 fs-5" method="post" action="php/received_button_action.php">
+                                            <input type="hidden" name="receiver_id" value="<?php echo $R_id;?>">
+                                            <input type="hidden" name="sender_id" value="<?php echo $S_id;?>">
+                                            <button class="btn" name="received_button">Received</button>
+                                        </form>
+                                    <?php
+                                    }
+                                    ?>
+                            </div>
+                        </div>
+
+                        <?php
+                            if($Sender_transaction_record != null and TimeCalcu::time_percentage($Sender_transaction_record->shipping_time, MyDateTime::TimeNow(), $Sender_transaction_record->arrival_time) >= 1){
+                                if($Sender_transaction_record->status != "to received" and $Sender_transaction_record->status != "received"){
+                                TransactionCheck::ToReceivedStatus($S_id, $R_id);
+                                }
+                            }
+
+                            if($Receiver_transaction_record != null and TimeCalcu::time_percentage($Receiver_transaction_record->shipping_time, MyDateTime::TimeNow(), $Receiver_transaction_record->arrival_time) >= 1){
+                                
+                                if($Receiver_transaction_record->status != "to received" and $Receiver_transaction_record->status != "received"){
+                                TransactionCheck::ToReceivedStatus($R_id, $S_id);
+                                }
+                            }
+                        
+                        ?>
+
+                        
                         
                     </div>
 
@@ -359,11 +542,11 @@ $TraderView = $_SESSION['user_id'] == $ThisPostObjectUserInfo->userInforamation-
 
         // Example 20% yung progress bar 1
         const progressBar1 = document.querySelector("#progressbar1");
-        updateProgressBar1(progressBar1, <?php echo 67; ?>);
-
+        updateProgressBar1(progressBar1, <?php if($Sender_transaction_record != null){ echo $percentage = 100 * TimeCalcu::time_percentage($Sender_transaction_record->shipping_time, MyDateTime::TimeNow(), $Sender_transaction_record->arrival_time);};?>);
+        
         // Example 70% yung progress bar 1
         const progressBar2 = document.querySelector("#progressbar2");
-        updateProgressBar2(progressBar2, <?php echo 50; ?>);
+        updateProgressBar2(progressBar2,   <?php if($Receiver_transaction_record != null){echo $percentage = 100 * TimeCalcu::time_percentage($Receiver_transaction_record->shipping_time, MyDateTime::TimeNow(), $Receiver_transaction_record->arrival_time);}; ?>);
     </script>
 
 </body>

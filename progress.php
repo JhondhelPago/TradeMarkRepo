@@ -64,6 +64,16 @@ if($ReceiverItem->tableOrientation == "post_img"){
 $Sender_transaction_record =  TransactionCheck::TransactionDetailsExist($S_id, $R_id);
 $Receiver_transaction_record = TransactionCheck::TransactionDetailsExist($R_id, $S_id);
 
+if($Sender_transaction_record != null and $Receiver_transaction_record!= null){
+
+    // first try to using the parameter arragement $sender_id, $receiver_id
+    try{
+        TransactionComplete($S_id, $R_id);
+
+    }catch(Exception $e){
+        TransactionComplete($R_id, $S_id);
+    }
+}
 
 
 ?>
@@ -272,7 +282,7 @@ $Receiver_transaction_record = TransactionCheck::TransactionDetailsExist($R_id, 
 
                                         <?php
                                         }
-                                        ?>
+                                    ?>
 
                                         
 
