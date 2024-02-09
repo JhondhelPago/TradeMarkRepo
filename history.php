@@ -170,15 +170,23 @@ $OfferHistoryObject = PostObjectTools::OfferPoolRows_to_OfferPoolObjectArray($Of
                         <div class="row gap-3 justify-content-center m-0 overflow-auto p-3" id="buyerList">
 
                             <!-- item 1 with price -->
-                            <h2>Offer History</h2>
+                            <h2>Post History</h2>
 
                             <?php 
 
                                 if($PostHistoryObject != null){
                                     foreach($PostHistoryObject as $PostObject){
-                                    $UserInfoObject = new UserInfoRetriever($PostObject->get_email())
+                                    $UserInfoObject = new UserInfoRetriever($PostObject->get_email());
+                                    
+                                    $Offer_id = StringManipulate::unwrap_square_bracket($PostObject->proposals_ids_array);
+                                    $OfferObject = History_OfferObjectRetriever($Offer_id);
 
+                                    $TraderPartnerUserInfo = new UserInfoRetriever($OfferObject->Email);
 
+                                    $Sender_id = $PostObject->get_post_id();
+                                    $Receiver_id = StringManipulate::unwrap_square_bracket($PostObject->proposals_ids_array);
+
+                                    $TransacRec= TransactionRecRetrieve($Sender_id, $Receiver_id);
                                 ?>
                                 
 
@@ -192,11 +200,11 @@ $OfferHistoryObject = PostObjectTools::OfferPoolRows_to_OfferPoolObjectArray($Of
                                         <div class="col col-sm-12 col-xl py-2 d-grid">
                                             <h1 class="display-6 fw-semibold mb-3"><?php echo $PostObject->itemName; ?></h1>
                                             <div class="row justify-content-evenly align-items-center mb-2 m-0s">
-                                                <p class="col lead"><?php echo $UserInfoObject->userInforamation->UserName;?></p>
-                                                <p class="col lead d-flex d-xxl-inline justify-content-end">#10199999</p>
+                                                <p class="col lead"><?php echo $TraderPartnerUserInfo->userInforamation->Email;?></p>
+                                                <p class="col lead d-flex d-xxl-inline justify-content-end"><?php echo $TransacRec->id; ?></p>
                                             </div>
                                             <div class="row justify-content-evenly align-items-center m-0s">
-                                                <p class="col lead"><?php echo $UserInfoObject->userInforamation->Address; ?></p>
+                                                <p class="col lead"><?php echo $TraderPartnerUserInfo->userInforamation->Address; ?></p>
                                                 <p class="col lead d-flex d-xxl-inline justify-content-end">01/01/2024</p>
                                             </div>
                                             <div class="row fs-light mb-2">
@@ -222,7 +230,7 @@ $OfferHistoryObject = PostObjectTools::OfferPoolRows_to_OfferPoolObjectArray($Of
                                 ?>
 
                             <!-- item 2 without price -->
-                            <h2>Post History</h2>
+                            <h2>Offer History</h2>
                                 <?php
                                     if($OfferHistoryObject != null){
 
@@ -234,20 +242,55 @@ $OfferHistoryObject = PostObjectTools::OfferPoolRows_to_OfferPoolObjectArray($Of
                                         <div class="row shadow justify-content-center align-items-center rounded" style="background: white;">
                                             <!-- pic -->
                                             <div class="col-12 col-xl-5 justify-content-center align-items-center p-0 ms-3 ms-lg-1 m-3 d-inline-grid rounded" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
-                                                <?php if($OfferObject->Method != "trade coin"){ ?>
-                                                    <img class="img-fluid rounded" src="<?php echo "offer-images-files/" . $OfferObject->Display_Item_Thumbnail(); ?>" alt="Product Image" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
+                                                <?php if($OfferObject->Method != "trade coin"){ $HistoryPostObject = History_PostObjectRetriever_selectedpostid_Param($OfferObject->selectedpost_id);
+                                                           // your trader partner info
+                                                           $TraderPartnerUserInfo = new UserInfoRetriever($HistoryPostObject->get_email());
+
+                                                    ?>
+                                                    <img class="img-fluid rounded" src="<?php echo "offer-images-files/" . $OfferObject->Display_Item_Thumbnail(); ?>
+                                                    " alt="Product Image" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
                                                 <?php } ?>
+
+                                                <?php if($OfferObject->Method == "trade coin"){ $HistoryPostObject = History_PostObjectRetriever_selectedpostid_Param($OfferObject->selectedpost_id);
+                                                           // your trader partner info
+                                                           $TraderPartnerUserInfo = new UserInfoRetriever($HistoryPostObject->get_email());
+
+                                                    ?>
+                                                    <img class="img-fluid rounded" src="<?php echo "image-files/" . $HistoryPostObject->Display_Item_Thumbnail(); ?>
+                                                    " alt="Product Image" style="min-height: 10vh; max-height: 400px; min-width: 10vh; max-width: 400px;">
+                                                   
+                                                <?php }?>
                                             </div>
                                             <!-- details -->
                                             <div class="col col-sm-12 col-xl py-2 d-grid">
-                                                <h1 class="display-6 fw-semibold mb-3"><?php if($OfferObject->Method != "trade coin"){echo $OfferObject->ItemName; };?> </h1>
+                                                <h1 class="display-6 fw-semibold mb-3"><?php if($OfferObject->Method != "trade coin"){echo $OfferObject->ItemName; }else{$HistoryPostObject->itemName;};?> </h1>
                                                 <div class="row justify-content-evenly align-items-center mb-2 m-0s">
-                                                    <p class="col lead"><?php echo $OfferObject->Email; ?>;</p>
-                                                    <p class="col lead d-flex d-xxl-inline justify-content-end">#10199999</p>
+                                                    <?php
+                                             
+        
+                                                    ?>
+                                                    <p class="col lead">Trader Partner: <?php echo $TraderPartnerUserInfo->userInforamation->Email; ?></p>
+                                                    <p class="col lead d-flex d-xxl-inline justify-content-end">
+                                                        <?php
+                                                            $Sender_id = $HistoryPostObject->get_post_id();
+                                                            $Receiver_id = $OfferObject->get_offer_id();
+
+                                                            $TransacRecordObject = TransactionRecRetrieve($Sender_id, $Receiver_id);
+
+                                                            echo $TransacRecordObject->id;
+                                                        ?>
+                                                    </p>
                                                 </div>
                                                 <div class="row justify-content-evenly align-items-center m-0s">
-                                                    <p class="col lead"><?php echo $UserInfoObject->userInforamation->Address; ?></p>
-                                                    <p class="col lead d-flex d-xxl-inline justify-content-end">01/01/2024</p>
+                                                    <p class="col lead">Trader Address:  <?php
+                                                        
+
+                                                    echo $TraderPartnerUserInfo->userInforamation->Address; ?></p>
+                                                    <p class="col lead d-flex d-xxl-inline justify-content-end">
+                                                        <?php
+                                                            echo $TransacRecordObject->arrival_date;
+                                                        ?>
+                                                    </p>
                                                 </div>
                                                 <div class="row fs-light mb-2">
                                                     <div class="col justify-content-center">

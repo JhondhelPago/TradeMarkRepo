@@ -8,7 +8,16 @@ $MyPostServer->Server_Conn();
 $MyPostServer_sql = "SELECT * FROM " . $MyPostServer->get_table() . " WHERE `id` = " . $_SESSION['transaction_PostID'];
 $result = $MyPostServer->get_ServerConnection()->query($MyPostServer_sql);
 $PostObject = PostObjectTools::PostRows_to_PostObjectArray($result)[0];
-$ThisPostObjectUserInfo = new UserInfoRetriever($PostObject->get_email());
+
+try{
+    $ThisPostObjectUserInfo = new UserInfoRetriever($PostObject->get_email());
+}catch(Exception $e){
+    header('Location: history.php');
+}
+
+// if the line 11 is raise an fatal error it means that is retrieved an object that do not exist, because it is alraedy moved to the history table
+
+
 
 
 $MyOfferServer = new SERVER("projectdb", "offer_pool");
@@ -64,14 +73,22 @@ if($ReceiverItem->tableOrientation == "post_img"){
 $Sender_transaction_record =  TransactionCheck::TransactionDetailsExist($S_id, $R_id);
 $Receiver_transaction_record = TransactionCheck::TransactionDetailsExist($R_id, $S_id);
 
-if($Sender_transaction_record != null and $Receiver_transaction_record!= null){
 
-    // first try to using the parameter arragement $sender_id, $receiver_id
-    try{
-        TransactionComplete($S_id, $R_id);
 
-    }catch(Exception $e){
-        TransactionComplete($R_id, $S_id);
+//if not there is existance of record of Sender and Receiver and if the record status is equal to received
+if($Sender_transaction_record != null and $Receiver_transaction_record != null){
+
+
+    if($Sender_transaction_record->status == "received" and $Receiver_transaction_record->status == "received"){
+        // first try to using the parameter arragement $sender_id, $receiver_id
+        try{
+            TransactionComplete($S_id, $R_id);
+
+        }catch(Exception $e){
+        // second try using the parameter arragement $receiver_id, $sender_id
+            TransactionComplete($R_id, $S_id);
+        }
+
     }
 }
 
@@ -284,7 +301,13 @@ if($Sender_transaction_record != null and $Receiver_transaction_record!= null){
                                         }
                                     ?>
 
-                                        
+                                        <?php 
+                                            if($Sender_transaction_record != null){
+                                                echo $Sender_transaction_record->status;
+                                                echo "<br>";
+                                                echo $Sender_transaction_record->id;
+                                            }
+                                        ?>
 
                                 </div>
                             </div>
@@ -378,8 +401,18 @@ if($Sender_transaction_record != null and $Receiver_transaction_record!= null){
                                     <?php
                                     }
                                     ?>
+
+                                    <?php 
+                                        if($Receiver_transaction_record != null){
+                                            echo $Receiver_transaction_record->status; 
+                                            echo "<br>";
+                                            echo $Receiver_transaction_record->id;
+                                        }
+                                    ?>
                             </div>
                         </div>
+
+                 
 
                         <?php
                             if($Sender_transaction_record != null and TimeCalcu::time_percentage($Sender_transaction_record->shipping_time, MyDateTime::TimeNow(), $Sender_transaction_record->arrival_time) >= 1){

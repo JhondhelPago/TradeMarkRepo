@@ -92,7 +92,7 @@ class DistanceDuration{
 class SERVER {
     private $host = "localhost"; // 127.0.0.1
     private $username = "root";
-    private $password = "NewphpMyAdmin2307";
+    private $password = "";
     private $database = null;
     private $table = null;
 
@@ -1357,9 +1357,38 @@ function TransactionComplete($sender_id, $receiver_id){
     header('Location: ../status.php');
 }
 
+function History_PostObjectRetriever_selectedpostid_Param($selectedpost_id){
+    $MyPostServer = new SERVER("projectdb", "history_post_img");
+    $MyPostServer->Server_Conn();
+    $MyPostServer_sql = "SELECT * FROM history_post_img  WHERE `id` = " . $selectedpost_id;
+    $result = $MyPostServer->get_ServerConnection()->query($MyPostServer_sql);
+    $HistoryPostObject = PostObjectTools::PostRows_to_PostObjectArray($result)[0];
+    
+    return $HistoryPostObject;
+}
+
+function TransactionRecRetrieve($sender_id, $receiver_id){
+
+    $MyTransacServer = new SERVER("projectdb", "transaction_details");
+    $MyTransacServer->Server_Conn();
+    $MyTransacServer_sql =  "SELECT * FROM transaction_details WHERE `sender_id` = $sender_id AND `receiver_id` = $receiver_id";
+    $result = $MyTransacServer->get_ServerConnection()->query($MyTransacServer_sql);
+    
+    $Transac_detail_Object = PostObjectTools::TransactionDetailsRows_to_TransactionDetailsObjectArray($result)[0];
+
+    return $Transac_detail_Object;
 
 
+}
 
+function History_OfferObjectRetriever($id){
+    $MyOfferServer = new SERVER('projectdb', "history_offer_pool");
+    $MyOfferServer->Server_Conn();
+    $MyOfferServer_sql = "SELECT * FROM history_offer_pool WHERE `id` = " . $id;
+    $result = $MyOfferServer->get_ServerConnection()->query($MyOfferServer_sql);
 
+    $OfferObject = PostObjectTools::OfferPoolRows_to_OfferPoolObjectArray($result)[0];
 
+    return $OfferObject;
+}
 ?>
