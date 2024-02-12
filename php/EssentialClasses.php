@@ -1306,6 +1306,48 @@ class TransactionCheck{
     
 }
 
+
+class TradeCointransfer{
+    public $amount;
+    public $trader_id;
+    public $client_id;
+
+    public function __construct($amount, $trader_id, $client_id)
+    {
+        $this->amount = $amount;
+        $this->trader_id = $trader_id;
+        $this->client_id = $client_id;
+        
+        $this->Transferprocess();
+
+        
+    }
+
+    public function Transferprocess(){
+
+        $this->minus_balance();
+        $this->plus_balance();
+    }
+    
+    public function plus_balance(){
+        
+        $MyServer = new SERVER("projectdb", "account_balance");
+        $MyServer->Server_Conn();
+        $sql = "UPDATE " . $MyServer->get_table() . " SET balance = balance + " . $this->amount . " WHERE id = " . $this->trader_id;
+        $MyServer->get_ServerConnection()->query($sql);
+
+
+    }
+    public function minus_balance(){
+
+        $MyServer = new SERVER("projectdb", "account_balance");
+        $MyServer->Server_Conn();
+        $sql = "UPDATE " . $MyServer->get_table() . " SET balance = balance - " . $this->amount . " WHERE id = " . $this->client_id;
+        $MyServer->get_ServerConnection()->query($sql);
+
+    }
+}
+
 function TransactionComplete($sender_id, $receiver_id){
     //get the record for the post_id
     $MyPostServer = new SERVER("projectdb", "post_img");
@@ -1354,7 +1396,9 @@ function TransactionComplete($sender_id, $receiver_id){
 
 
 
-    header('Location: ../status.php');
+    
+
+
 }
 
 function History_PostObjectRetriever_selectedpostid_Param($selectedpost_id){
@@ -1391,4 +1435,9 @@ function History_OfferObjectRetriever($id){
 
     return $OfferObject;
 }
+
+
+
+
+
 ?>

@@ -53,8 +53,12 @@ if($_SESSION['user_id'] == $ThisPostObjectUserInfo->userInforamation->user_Id())
     $SenderInfo = $ThisPostObjectUserInfo->userInforamation;
     $SenderItem = $PostObject;
 
+    $TCamount = $SenderItem->price;
+
     $ReceiverInfo = $ThisOfferObjectUserInfo->userInforamation;
     $ReceiverItem = $OfferObject;
+
+
     
 
 }elseif($_SESSION['user_id'] == $ThisOfferObjectUserInfo->userInforamation->user_Id()){
@@ -94,9 +98,15 @@ if($Sender_transaction_record != null){
         try{
             TransactionComplete($S_id, $R_id);
 
+            $TradeCoinTransObj = new TradeCointransfer($TCamount, $SenderInfo->user_Id(), $ReceiverInfo->user_Id());
+
+            header("Location: status.php");
+
         }catch(Exception $e){
         // second try using the parameter arragement $receiver_id, $sender_id
             TransactionComplete($R_id, $S_id);
+
+            header("Location: status.php");
         }
 
     }

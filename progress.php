@@ -27,6 +27,9 @@ $result1 = $MyOfferServer->get_ServerConnection()->query($MyOfferServer_sql);
 $OfferObject = PostObjectTools::OfferPoolRows_to_OfferPoolObjectArray($result1)[0];
 $ThisOfferObjectUserInfo = new UserInfoRetriever($OfferObject->Email);
 
+
+$TCamount;
+
 // if the id of the post or the offer match the $_SESSION[user_id], it is the sender id,  otherwise it's the receiver id
 
 $Sender_id;
@@ -43,6 +46,8 @@ if($_SESSION['user_id'] == $ThisPostObjectUserInfo->userInforamation->user_Id())
 
     $ReceiverInfo = $ThisOfferObjectUserInfo->userInforamation;
     $ReceiverItem = $OfferObject;
+
+    $TCamount = $ReceiverItem->Price;
     
 
 }elseif($_SESSION['user_id'] == $ThisOfferObjectUserInfo->userInforamation->user_Id()){
@@ -54,6 +59,7 @@ if($_SESSION['user_id'] == $ThisPostObjectUserInfo->userInforamation->user_Id())
 
     $ReceiverInfo = $ThisPostObjectUserInfo->userInforamation;
     $ReceiverItem = $PostObject;
+
 }
 
 
@@ -82,11 +88,24 @@ if($Sender_transaction_record != null and $Receiver_transaction_record != null){
     if($Sender_transaction_record->status == "received" and $Receiver_transaction_record->status == "received"){
         // first try to using the parameter arragement $sender_id, $receiver_id
         try{
+
+            //will add a parameter of $amount for the inner function
+
             TransactionComplete($S_id, $R_id);
+
+
+            $TCTransfer_obj = new TradeCointransfer($TCamount, $SenderInfo->user_Id(), $ReceiverInfo->user_Id());
+
+            header('Location: status.php');
+
 
         }catch(Exception $e){
         // second try using the parameter arragement $receiver_id, $sender_id
+
+
             TransactionComplete($R_id, $S_id);
+
+            header('Location: status.php');
         }
 
     }

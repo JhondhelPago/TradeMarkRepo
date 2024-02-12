@@ -65,8 +65,8 @@
                             <!-- background-color: #FFBC3C; -->
 
                             
-                            <button class="col-8 col-md-4 col-xxl-2 btn m-1 btn-warning fw-regular">Login</button>
-                            <button class="col-8 col-md-4 col-xxl-2 btn m-1 btn-outline-warning border-dark text-dark fw-regular">Sign-Up</button>
+                            <button class="col-8 col-md-4 col-xxl-2 btn m-1 btn-warning fw-regular" id="login_button">Login</button>
+                            <button class="col-8 col-md-4 col-xxl-2 btn m-1 btn-outline-warning border-dark text-dark fw-regular" id="login_button">Sign-Up</button>
                         </div>
 
                         <!-- hero img -->
@@ -88,5 +88,10 @@
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById("login_button").addEventListener("click", function() {
+        window.location.href = "login_form.php"; // Redirect to home.php
+        });
+    </script>
 </body>
 </html>
